@@ -43,9 +43,9 @@ impl fmt::Display for CtonError {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         match *self {
             CtonError::Verifier(ref e) => write!(f, "Verifier error: {}", e),
-            CtonError::InvalidInput |
-            CtonError::ImplLimitExceeded |
-            CtonError::CodeTooLarge => f.write_str(self.description()),
+            CtonError::InvalidInput | CtonError::ImplLimitExceeded | CtonError::CodeTooLarge => {
+                f.write_str(self.description())
+            }
         }
     }
 }
@@ -62,9 +62,9 @@ impl StdError for CtonError {
     fn cause(&self) -> Option<&StdError> {
         match *self {
             CtonError::Verifier(ref e) => Some(e),
-            CtonError::InvalidInput |
-            CtonError::ImplLimitExceeded |
-            CtonError::CodeTooLarge => None,
+            CtonError::InvalidInput | CtonError::ImplLimitExceeded | CtonError::CodeTooLarge => {
+                None
+            }
         }
     }
 }

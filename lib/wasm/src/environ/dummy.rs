@@ -166,7 +166,9 @@ impl<'dummy_environment> FuncEnvironment for DummyFuncEnvironment<'dummy_environ
             base: ir::HeapBase::GlobalVar(gv),
             min_size: 0.into(),
             guard_size: 0x8000_0000.into(),
-            style: ir::HeapStyle::Static { bound: 0x1_0000_0000.into() },
+            style: ir::HeapStyle::Static {
+                bound: 0x1_0000_0000.into(),
+            },
         })
     }
 
@@ -294,10 +296,9 @@ impl<'data> ModuleEnvironment<'data> for DummyEnvironment {
             "Imported functions must be declared first"
         );
         self.info.functions.push(Exportable::new(sig_index));
-        self.info.imported_funcs.push((
-            String::from(module),
-            String::from(field),
-        ));
+        self.info
+            .imported_funcs
+            .push((String::from(module), String::from(field)));
     }
 
     fn get_num_func_imports(&self) -> usize {
@@ -346,33 +347,27 @@ impl<'data> ModuleEnvironment<'data> for DummyEnvironment {
     }
 
     fn declare_func_export(&mut self, func_index: FunctionIndex, name: &'data str) {
-        self.info.functions[func_index].export_names.push(
-            String::from(
-                name,
-            ),
-        );
+        self.info.functions[func_index]
+            .export_names
+            .push(String::from(name));
     }
 
     fn declare_table_export(&mut self, table_index: TableIndex, name: &'data str) {
-        self.info.tables[table_index].export_names.push(
-            String::from(name),
-        );
+        self.info.tables[table_index]
+            .export_names
+            .push(String::from(name));
     }
 
     fn declare_memory_export(&mut self, memory_index: MemoryIndex, name: &'data str) {
-        self.info.memories[memory_index].export_names.push(
-            String::from(
-                name,
-            ),
-        );
+        self.info.memories[memory_index]
+            .export_names
+            .push(String::from(name));
     }
 
     fn declare_global_export(&mut self, global_index: GlobalIndex, name: &'data str) {
-        self.info.globals[global_index].export_names.push(
-            String::from(
-                name,
-            ),
-        );
+        self.info.globals[global_index]
+            .export_names
+            .push(String::from(name));
     }
 
     fn declare_start_func(&mut self, func_index: FunctionIndex) {

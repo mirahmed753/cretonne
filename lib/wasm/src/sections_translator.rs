@@ -32,21 +32,19 @@ pub fn parse_function_signatures(
         match *parser.read() {
             ParserState::EndSection => break,
             ParserState::TypeSectionEntry(FuncType {
-                                              form: wasmparser::Type::Func,
-                                              ref params,
-                                              ref returns,
-                                          }) => {
+                form: wasmparser::Type::Func,
+                ref params,
+                ref returns,
+            }) => {
                 let mut sig = Signature::new(CallConv::SystemV);
                 sig.params.extend(params.iter().map(|ty| {
-                    let cret_arg: cretonne::ir::Type = type_to_type(ty).expect(
-                        "only numeric types are supported in function signatures",
-                    );
+                    let cret_arg: cretonne::ir::Type = type_to_type(ty)
+                        .expect("only numeric types are supported in function signatures");
                     AbiParam::new(cret_arg)
                 }));
                 sig.returns.extend(returns.iter().map(|ty| {
-                    let cret_arg: cretonne::ir::Type = type_to_type(ty).expect(
-                        "only numeric types are supported in function signatures",
-                    );
+                    let cret_arg: cretonne::ir::Type = type_to_type(ty)
+                        .expect("only numeric types are supported in function signatures");
                     AbiParam::new(cret_arg)
                 }));
                 environ.declare_signature(&sig);
@@ -77,10 +75,11 @@ pub fn parse_import_section<'data>(
                 environ.declare_func_import(sig as SignatureIndex, module_name, field_name);
             }
             ParserState::ImportSectionEntry {
-                ty: ImportSectionEntryType::Memory(MemoryType {
-                                                   limits: ref memlimits,
-                                                   shared,
-                                               }),
+                ty:
+                    ImportSectionEntryType::Memory(MemoryType {
+                        limits: ref memlimits,
+                        shared,
+                    }),
                 ..
             } => {
                 environ.declare_memory(Memory {
@@ -90,7 +89,8 @@ pub fn parse_import_section<'data>(
                 });
             }
             ParserState::ImportSectionEntry {
-                ty: ImportSectionEntryType::Global(ref ty), ..
+                ty: ImportSectionEntryType::Global(ref ty),
+                ..
             } => {
                 environ.declare_global(Global {
                     ty: type_to_type(&ty.content_type).unwrap(),
@@ -99,17 +99,16 @@ pub fn parse_import_section<'data>(
                 });
             }
             ParserState::ImportSectionEntry {
-                ty: ImportSectionEntryType::Table(ref tab), ..
-            } => {
-                environ.declare_table(Table {
-                    ty: match type_to_type(&tab.element_type) {
-                        Ok(t) => TableElementType::Val(t),
-                        Err(()) => TableElementType::Func(),
-                    },
-                    size: tab.limits.initial as usize,
-                    maximum: tab.limits.maximum.map(|x| x as usize),
-                })
-            }
+                ty: ImportSectionEntryType::Table(ref tab),
+                ..
+            } => environ.declare_table(Table {
+                ty: match type_to_type(&tab.element_type) {
+                    Ok(t) => TableElementType::Val(t),
+                    Err(()) => TableElementType::Func(),
+                },
+                size: tab.limits.initial as usize,
+                maximum: tab.limits.maximum.map(|x| x as usize),
+            }),
             ParserState::EndSection => break,
             ref s => return Err(SectionParsingError::WrongSectionContent(format!("{:?}", s))),
         };
@@ -319,16 +318,14 @@ pub fn parse_table_section(
 ) -> Result<(), SectionParsingError> {
     loop {
         match *parser.read() {
-            ParserState::TableSectionEntry(ref table) => {
-                environ.declare_table(Table {
-                    ty: match type_to_type(&table.element_type) {
-                        Ok(t) => TableElementType::Val(t),
-                        Err(()) => TableElementType::Func(),
-                    },
-                    size: table.limits.initial as usize,
-                    maximum: table.limits.maximum.map(|x| x as usize),
-                })
-            }
+            ParserState::TableSectionEntry(ref table) => environ.declare_table(Table {
+                ty: match type_to_type(&table.element_type) {
+                    Ok(t) => TableElementType::Val(t),
+                    Err(()) => TableElementType::Func(),
+                },
+                size: table.limits.initial as usize,
+                maximum: table.limits.maximum.map(|x| x as usize),
+            }),
             ParserState::EndSection => break,
             ref s => return Err(SectionParsingError::WrongSectionContent(format!("{:?}", s))),
         };

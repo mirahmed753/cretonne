@@ -124,13 +124,11 @@ impl<'a> FlagsVerifier<'a> {
                         merge(&mut live_val, val, inst)?;
                     }
                 }
-                BranchInfo::Table(jt) => {
-                    for (_, dest) in self.func.jump_tables[jt].entries() {
-                        if let Some(val) = self.livein[dest].expand() {
-                            merge(&mut live_val, val, inst)?;
-                        }
+                BranchInfo::Table(jt) => for (_, dest) in self.func.jump_tables[jt].entries() {
+                    if let Some(val) = self.livein[dest].expand() {
+                        merge(&mut live_val, val, inst)?;
                     }
-                }
+                },
             }
         }
 

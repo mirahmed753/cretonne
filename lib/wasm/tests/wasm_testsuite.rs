@@ -59,45 +59,42 @@ fn handle_module(path: &PathBuf, flags: &Flags) {
         None => {
             panic!("the file extension is not wasm or wat");
         }
-        Some(ext) => {
-            match ext.to_str() {
-                Some("wasm") => read_wasm_file(path.clone()).expect("error reading wasm file"),
-                Some("wat") => {
-                    let tmp_dir = TempDir::new("cretonne-wasm").unwrap();
-                    let file_path = tmp_dir.path().join("module.wasm");
-                    File::create(file_path.clone()).unwrap();
-                    let result_output = Command::new("wat2wasm")
-                        .arg(path.clone())
-                        .arg("-o")
-                        .arg(file_path.to_str().unwrap())
-                        .output();
-                    match result_output {
-                        Err(e) => {
-                            if e.kind() == io::ErrorKind::NotFound {
-                                println!(
-                                    "wat2wasm not found; disabled test {}",
-                                    path.to_str().unwrap()
-                                );
-                                return;
-                            }
-                            panic!("error convering wat file: {}", e.description());
+        Some(ext) => match ext.to_str() {
+            Some("wasm") => read_wasm_file(path.clone()).expect("error reading wasm file"),
+            Some("wat") => {
+                let tmp_dir = TempDir::new("cretonne-wasm").unwrap();
+                let file_path = tmp_dir.path().join("module.wasm");
+                File::create(file_path.clone()).unwrap();
+                let result_output = Command::new("wat2wasm")
+                    .arg(path.clone())
+                    .arg("-o")
+                    .arg(file_path.to_str().unwrap())
+                    .output();
+                match result_output {
+                    Err(e) => {
+                        if e.kind() == io::ErrorKind::NotFound {
+                            println!(
+                                "wat2wasm not found; disabled test {}",
+                                path.to_str().unwrap()
+                            );
+                            return;
                         }
-                        Ok(output) => {
-                            if !output.status.success() {
-                                panic!(
-                                    "error running wat2wasm: {}",
-                                    str::from_utf8(&output.stderr).expect(
-                                        "wat2wasm's error message should be valid UTF-8",
-                                    )
-                                );
-                            }
+                        panic!("error convering wat file: {}", e.description());
+                    }
+                    Ok(output) => {
+                        if !output.status.success() {
+                            panic!(
+                                "error running wat2wasm: {}",
+                                str::from_utf8(&output.stderr)
+                                    .expect("wat2wasm's error message should be valid UTF-8",)
+                            );
                         }
                     }
-                    read_wasm_file(file_path).expect("error reading converted wasm file")
                 }
-                None | Some(&_) => panic!("the file extension for {:?} is not wasm or wat", path),
+                read_wasm_file(file_path).expect("error reading converted wasm file")
             }
-        }
+            None | Some(&_) => panic!("the file extension for {:?} is not wasm or wat", path),
+        },
     };
     let mut dummy_environ = DummyEnvironment::with_flags(flags.clone());
     translate_module(&data, &mut dummy_environ).unwrap();

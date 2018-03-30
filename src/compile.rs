@@ -78,9 +78,7 @@ fn handle_module(
     name: &str,
     fisa: FlagsOrIsa,
 ) -> Result<(), String> {
-    let buffer = read_to_string(&path).map_err(
-        |e| format!("{}: {}", name, e),
-    )?;
+    let buffer = read_to_string(&path).map_err(|e| format!("{}: {}", name, e))?;
     let test_file = parse_test(&buffer).map_err(|e| format!("{}: {}", name, e))?;
 
     // If we have an isa from the command-line, use that. Otherwise if the
@@ -96,9 +94,9 @@ fn handle_module(
     for (func, _) in test_file.functions {
         let mut context = Context::new();
         context.func = func;
-        let size = context.compile(isa).map_err(|err| {
-            pretty_error(&context.func, Some(isa), err)
-        })?;
+        let size = context
+            .compile(isa)
+            .map_err(|err| pretty_error(&context.func, Some(isa), err))?;
         if flag_print {
             println!("{}", context.func.display(isa));
         }

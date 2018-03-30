@@ -81,9 +81,7 @@ fn handle_module(
     vprint!(flag_verbose, "Translating... ");
     terminal.reset().unwrap();
 
-    let mut data = read_to_end(path.clone()).map_err(|err| {
-        String::from(err.description())
-    })?;
+    let mut data = read_to_end(path.clone()).map_err(|err| String::from(err.description()))?;
     if !data.starts_with(&[b'\0', b'a', b's', b'm']) {
         let tmp_dir = TempDir::new("cretonne-wasm").unwrap();
         let file_path = tmp_dir.path().join("module.wasm");
@@ -93,14 +91,14 @@ fn handle_module(
             .arg("-o")
             .arg(file_path.to_str().unwrap())
             .output()
-            .or_else(|e| if let io::ErrorKind::NotFound = e.kind() {
-                return Err(String::from("wat2wasm not found"));
-            } else {
-                return Err(String::from(e.description()));
+            .or_else(|e| {
+                if let io::ErrorKind::NotFound = e.kind() {
+                    return Err(String::from("wat2wasm not found"));
+                } else {
+                    return Err(String::from(e.description()));
+                }
             })?;
-        data = read_to_end(file_path).map_err(
-            |err| String::from(err.description()),
-        )?;
+        data = read_to_end(file_path).map_err(|err| String::from(err.description()))?;
     }
 
     let mut dummy_environ = DummyEnvironment::with_flags(fisa.flags.clone());
@@ -153,24 +151,22 @@ fn handle_module(
         let mut context = Context::new();
         context.func = func.clone();
         if flag_check_translation {
-            context.verify(fisa).map_err(|err| {
-                pretty_verifier_error(&context.func, fisa.isa, &err)
-            })?;
+            context
+                .verify(fisa)
+                .map_err(|err| pretty_verifier_error(&context.func, fisa.isa, &err))?;
         } else if let Some(isa) = fisa.isa {
-            let compiled_size = context.compile(isa).map_err(|err| {
-                pretty_error(&context.func, fisa.isa, err)
-            })?;
+            let compiled_size = context
+                .compile(isa)
+                .map_err(|err| pretty_error(&context.func, fisa.isa, err))?;
             if flag_print_size {
                 println!(
                     "Function #{} code size: {} bytes",
-                    func_index,
-                    compiled_size
+                    func_index, compiled_size
                 );
                 total_module_code_size += compiled_size;
                 println!(
                     "Function #{} bytecode size: {} bytes",
-                    func_index,
-                    dummy_environ.func_bytecode_sizes[def_index]
+                    func_index, dummy_environ.func_bytecode_sizes[def_index]
                 );
             }
         } else {

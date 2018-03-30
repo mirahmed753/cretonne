@@ -137,9 +137,9 @@ impl SubTest for TestBinEmit {
                             &func.dfg[inst],
                             func.dfg.ctrl_typevar(inst),
                         ).filter(|e| {
-                                let recipe_constraints = &encinfo.constraints[e.recipe()];
-                                recipe_constraints.satisfied(inst, &divert, &func)
-                            });
+                            let recipe_constraints = &encinfo.constraints[e.recipe()];
+                            recipe_constraints.satisfied(inst, &divert, &func)
+                        });
 
                         if is_compressed {
                             // Get the smallest legal encoding
@@ -148,8 +148,7 @@ impl SubTest for TestBinEmit {
                             // If not using compressed, just use the first encoding.
                             legal_encodings.next()
                         }
-                    }
-                    {
+                    } {
                         func.encodings[inst] = enc;
                     }
                 }
@@ -158,9 +157,8 @@ impl SubTest for TestBinEmit {
         }
 
         // Relax branches and compute EBB offsets based on the encodings.
-        let code_size = binemit::relax_branches(&mut func, isa).map_err(|e| {
-            pretty_error(&func, context.isa, e)
-        })?;
+        let code_size = binemit::relax_branches(&mut func, isa)
+            .map_err(|e| pretty_error(&func, context.isa, e))?;
 
         // Collect all of the 'bin:' directives on instructions.
         let mut bins = HashMap::new();
@@ -180,8 +178,7 @@ impl SubTest for TestBinEmit {
                     _ => {
                         return Err(format!(
                             "'bin:' directive on non-inst {}: {}",
-                            comment.entity,
-                            comment.text
+                            comment.entity, comment.text
                         ))
                     }
                 }
@@ -197,8 +194,7 @@ impl SubTest for TestBinEmit {
             divert.clear();
             // Correct header offsets should have been computed by `relax_branches()`.
             assert_eq!(
-                sink.offset,
-                func.offsets[ebb],
+                sink.offset, func.offsets[ebb],
                 "Inconsistent {} header offset",
                 ebb
             );
@@ -210,9 +206,10 @@ impl SubTest for TestBinEmit {
                 // Send legal encodings into the emitter.
                 if enc.is_legal() {
                     // Generate a better error message if output locations are not specified.
-                    if let Some(&v) = func.dfg.inst_results(inst).iter().find(|&&v| {
-                        !func.locations[v].is_assigned()
-                    })
+                    if let Some(&v) = func.dfg
+                        .inst_results(inst)
+                        .iter()
+                        .find(|&&v| !func.locations[v].is_assigned())
                     {
                         return Err(format!(
                             "Missing register/stack slot for {} in {}",
@@ -238,9 +235,10 @@ impl SubTest for TestBinEmit {
                     if !enc.is_legal() {
                         // A possible cause of an unencoded instruction is a missing location for
                         // one of the input operands.
-                        if let Some(&v) = func.dfg.inst_args(inst).iter().find(|&&v| {
-                            !func.locations[v].is_assigned()
-                        })
+                        if let Some(&v) = func.dfg
+                            .inst_args(inst)
+                            .iter()
+                            .find(|&&v| !func.locations[v].is_assigned())
                         {
                             return Err(format!(
                                 "Missing register/stack slot for {} in {}",
@@ -286,8 +284,7 @@ impl SubTest for TestBinEmit {
         if sink.offset != code_size {
             return Err(format!(
                 "Expected code size {}, got {}",
-                code_size,
-                sink.offset
+                code_size, sink.offset
             ));
         }
 

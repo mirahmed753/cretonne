@@ -99,11 +99,9 @@ fn test_tuples<'a>(
                     // TODO: Generate a list of default ISAs.
                     return Err(format!("test {} requires an ISA", test.name()));
                 }
-                IsaSpec::Some(ref isas) => {
-                    for isa in isas {
-                        out.push((&**test, isa.flags(), Some(&**isa)));
-                    }
-                }
+                IsaSpec::Some(ref isas) => for isa in isas {
+                    out.push((&**test, isa.flags(), Some(&**isa)));
+                },
             }
         } else {
             // This test doesn't require an ISA, and we only want to run one instance of it.
@@ -129,15 +127,11 @@ fn run_one_test<'a>(
 
     // Should we run the verifier before this test?
     if !context.verified && test.needs_verifier() {
-        verify_function(&func, context.flags_or_isa()).map_err(
-            |e| {
-                pretty_verifier_error(&func, isa, &e)
-            },
-        )?;
+        verify_function(&func, context.flags_or_isa())
+            .map_err(|e| pretty_verifier_error(&func, isa, &e))?;
         context.verified = true;
     }
 
-    test.run(func, context).map_err(
-        |e| format!("{}: {}", name, e),
-    )
+    test.run(func, context)
+        .map_err(|e| format!("{}: {}", name, e))
 }

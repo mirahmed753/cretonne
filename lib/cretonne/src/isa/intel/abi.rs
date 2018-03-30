@@ -81,7 +81,8 @@ impl ArgAssigner for Args {
                         RU::r14
                     } else {
                         RU::rsi
-                    } as RegUnit).into()
+                    } as RegUnit)
+                        .into()
                 }
                 // This is SpiderMonkey's `WasmTableCallSigReg`.
                 ArgumentPurpose::SignatureId => return ArgumentLoc::Reg(RU::rbx as RegUnit).into(),
@@ -263,10 +264,8 @@ fn insert_system_v_prologue(
     pos.func.locations[fp] = ir::ValueLoc::Reg(RU::rbp as RegUnit);
 
     pos.ins().x86_push(fp);
-    pos.ins().copy_special(
-        RU::rsp as RegUnit,
-        RU::rbp as RegUnit,
-    );
+    pos.ins()
+        .copy_special(RU::rsp as RegUnit, RU::rbp as RegUnit);
 
     for reg in csrs.iter() {
         // Append param to entry EBB

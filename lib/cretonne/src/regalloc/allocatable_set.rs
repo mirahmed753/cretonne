@@ -99,9 +99,10 @@ impl AllocatableSet {
     ///
     /// This assumes that unused bits are 1.
     pub fn interferes_with(&self, other: &AllocatableSet) -> bool {
-        self.avail.iter().zip(&other.avail).any(
-            |(&x, &y)| (x | y) != !0,
-        )
+        self.avail
+            .iter()
+            .zip(&other.avail)
+            .any(|(&x, &y)| (x | y) != !0)
     }
 
     /// Intersect this set of allocatable registers with `other`. This has the effect of removing
@@ -164,11 +165,9 @@ impl<'a> fmt::Display for DisplayAllocatableSet<'a> {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         write!(f, "[")?;
         match self.1 {
-            None => {
-                for w in &self.0.avail {
-                    write!(f, " #{:08x}", w)?;
-                }
-            }
+            None => for w in &self.0.avail {
+                write!(f, " #{:08x}", w)?;
+            },
             Some(reginfo) => {
                 let toprcs = reginfo
                     .banks
@@ -196,11 +195,12 @@ impl<'a> fmt::Display for DisplayAllocatableSet<'a> {
                                 f,
                                 "{}",
                                 bank.names
-                                    .get(offset as usize)
-                                    .and_then(|name| name.chars().nth(1))
-                                    .unwrap_or_else(
-                                        || char::from_digit(u32::from(offset % 10), 10).unwrap(),
-                                    )
+                                    .get(offset as usize,)
+                                    .and_then(|name| name.chars().nth(1),)
+                                    .unwrap_or_else(|| char::from_digit(
+                                        u32::from(offset % 10),
+                                        10
+                                    ).unwrap(),)
                             )?;
                         }
                     }

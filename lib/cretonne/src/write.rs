@@ -345,10 +345,12 @@ pub fn write_operands(
             write_ebb_args(w, &args[2..])
         }
         BranchTable { arg, table, .. } => write!(w, " {}, {}", arg, table),
-        Call { func_ref, ref args, .. } => {
-            write!(w, " {}({})", func_ref, DisplayValues(args.as_slice(pool)))
-        }
-        IndirectCall { sig_ref, ref args, .. } => {
+        Call {
+            func_ref, ref args, ..
+        } => write!(w, " {}({})", func_ref, DisplayValues(args.as_slice(pool))),
+        IndirectCall {
+            sig_ref, ref args, ..
+        } => {
             let args = args.as_slice(pool);
             write!(
                 w,
@@ -359,7 +361,9 @@ pub fn write_operands(
             )
         }
         FuncAddr { func_ref, .. } => write!(w, " {}", func_ref),
-        StackLoad { stack_slot, offset, .. } => write!(w, " {}{}", stack_slot, offset),
+        StackLoad {
+            stack_slot, offset, ..
+        } => write!(w, " {}{}", stack_slot, offset),
         StackStore {
             arg,
             stack_slot,
@@ -367,7 +371,9 @@ pub fn write_operands(
             ..
         } => write!(w, " {}, {}{}", arg, stack_slot, offset),
         HeapAddr { heap, arg, imm, .. } => write!(w, " {}, {}, {}", heap, arg, imm),
-        Load { flags, arg, offset, .. } => write!(w, "{} {}{}", flags, arg, offset),
+        Load {
+            flags, arg, offset, ..
+        } => write!(w, "{} {}{}", flags, arg, offset),
         Store {
             flags,
             args,
@@ -419,8 +425,12 @@ pub fn write_operands(
         }
         Trap { code, .. } => write!(w, " {}", code),
         CondTrap { arg, code, .. } => write!(w, " {}, {}", arg, code),
-        IntCondTrap { cond, arg, code, .. } => write!(w, " {} {}, {}", cond, arg, code),
-        FloatCondTrap { cond, arg, code, .. } => write!(w, " {} {}, {}", cond, arg, code),
+        IntCondTrap {
+            cond, arg, code, ..
+        } => write!(w, " {} {}, {}", cond, arg, code),
+        FloatCondTrap {
+            cond, arg, code, ..
+        } => write!(w, " {} {}, {}", cond, arg, code),
     }
 }
 

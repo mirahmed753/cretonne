@@ -136,16 +136,16 @@ fn parse_local_decls(
     num_params: usize,
 ) -> CtonResult {
     let mut next_local = num_params;
-    let local_count = reader.read_local_count().map_err(
-        |_| CtonError::InvalidInput,
-    )?;
+    let local_count = reader
+        .read_local_count()
+        .map_err(|_| CtonError::InvalidInput)?;
 
     let mut locals_total = 0;
     for _ in 0..local_count {
         builder.set_srcloc(cur_srcloc(reader));
-        let (count, ty) = reader.read_local_decl(&mut locals_total).map_err(|_| {
-            CtonError::InvalidInput
-        })?;
+        let (count, ty) = reader
+            .read_local_decl(&mut locals_total)
+            .map_err(|_| CtonError::InvalidInput)?;
         declare_locals(builder, count, ty, &mut next_local);
     }
 

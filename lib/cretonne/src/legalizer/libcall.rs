@@ -6,11 +6,11 @@ use ir::InstBuilder;
 /// Try to expand `inst` as a library call, returning true is successful.
 pub fn expand_as_libcall(inst: ir::Inst, func: &mut ir::Function) -> bool {
     // Does the opcode/ctrl_type combo even have a well-known runtime library name.
-    let libcall =
-        match ir::LibCall::for_inst(func.dfg[inst].opcode(), func.dfg.ctrl_typevar(inst)) {
-            Some(lc) => lc,
-            None => return false,
-        };
+    let libcall = match ir::LibCall::for_inst(func.dfg[inst].opcode(), func.dfg.ctrl_typevar(inst))
+    {
+        Some(lc) => lc,
+        None => return false,
+    };
 
     let funcref = find_funcref(libcall, func).unwrap_or_else(|| make_funcref(libcall, inst, func));
 

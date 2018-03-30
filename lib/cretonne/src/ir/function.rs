@@ -150,9 +150,9 @@ impl Function {
     /// Returns the value of the last `purpose` parameter, or `None` if no such parameter exists.
     pub fn special_param(&self, purpose: ir::ArgumentPurpose) -> Option<ir::Value> {
         let entry = self.layout.entry_block().expect("Function is empty");
-        self.signature.special_param_index(purpose).map(|i| {
-            self.dfg.ebb_params(entry)[i]
-        })
+        self.signature
+            .special_param_index(purpose)
+            .map(|i| self.dfg.ebb_params(entry)[i])
     }
 
     /// Get an iterator over the instructions in `ebb`, including offsets and encoded instruction
@@ -179,9 +179,9 @@ impl Function {
 
     /// Wrapper around `DataFlowGraph::encode` which assigns `inst` the resulting encoding.
     pub fn update_encoding(&mut self, inst: ir::Inst, isa: &TargetIsa) -> Result<(), Legalize> {
-        self.dfg.encode(inst, isa).map(
-            |e| { self.encodings[inst] = e; },
-        )
+        self.dfg.encode(inst, isa).map(|e| {
+            self.encodings[inst] = e;
+        })
     }
 }
 

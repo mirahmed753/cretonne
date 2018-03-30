@@ -112,11 +112,9 @@ impl ControlFlowGraph {
                 BranchInfo::SingleDest(dest, _) => {
                     self.add_edge((ebb, inst), dest);
                 }
-                BranchInfo::Table(jt) => {
-                    for (_, dest) in func.jump_tables[jt].entries() {
-                        self.add_edge((ebb, inst), dest);
-                    }
-                }
+                BranchInfo::Table(jt) => for (_, dest) in func.jump_tables[jt].entries() {
+                    self.add_edge((ebb, inst), dest);
+                },
                 BranchInfo::NotABranch => {}
             }
         }
@@ -128,10 +126,9 @@ impl ControlFlowGraph {
         // our iteration over successors.
         let mut successors = mem::replace(&mut self.data[ebb].successors, Default::default());
         for succ in successors.iter(&self.succ_forest) {
-            self.data[succ].predecessors.retain(
-                &mut self.pred_forest,
-                |_, &mut e| e != ebb,
-            );
+            self.data[succ]
+                .predecessors
+                .retain(&mut self.pred_forest, |_, &mut e| e != ebb);
         }
         successors.clear(&mut self.succ_forest);
     }
@@ -149,17 +146,12 @@ impl ControlFlowGraph {
     }
 
     fn add_edge(&mut self, from: BasicBlock, to: Ebb) {
-        self.data[from.0].successors.insert(
-            to,
-            &mut self.succ_forest,
-            &(),
-        );
-        self.data[to].predecessors.insert(
-            from.1,
-            from.0,
-            &mut self.pred_forest,
-            &(),
-        );
+        self.data[from.0]
+            .successors
+            .insert(to, &mut self.succ_forest, &());
+        self.data[to]
+            .predecessors
+            .insert(from.1, from.0, &mut self.pred_forest, &());
     }
 
     /// Get an iterator over the CFG predecessors to `ebb`.

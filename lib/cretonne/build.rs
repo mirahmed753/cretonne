@@ -29,11 +29,9 @@ fn main() {
 
     // Configure isa targets cfg.
     match isa_targets(cretonne_targets, &target_triple) {
-        Ok(isa_targets) => {
-            for isa in &isa_targets {
-                println!("cargo:rustc-cfg=build_{}", isa.name());
-            }
-        }
+        Ok(isa_targets) => for isa in &isa_targets {
+            println!("cargo:rustc-cfg=build_{}", isa.name());
+        },
         Err(err) => {
             eprintln!("Error: {}", err);
             process::exit(1);
@@ -130,16 +128,14 @@ impl Isa {
 /// Returns isa targets to configure conditional compilation.
 fn isa_targets(cretonne_targets: Option<&str>, target_triple: &str) -> Result<Vec<Isa>, String> {
     match cretonne_targets {
-        Some("native") => {
-            Isa::from_arch(target_triple.split('-').next().unwrap())
-                .map(|isa| vec![isa])
-                .ok_or_else(|| {
-                    format!(
-                        "no supported isa found for target triple `{}`",
-                        target_triple
-                    )
-                })
-        }
+        Some("native") => Isa::from_arch(target_triple.split('-').next().unwrap())
+            .map(|isa| vec![isa])
+            .ok_or_else(|| {
+                format!(
+                    "no supported isa found for target triple `{}`",
+                    target_triple
+                )
+            }),
         Some(targets) => {
             let unknown_isa_targets = targets
                 .split(',')

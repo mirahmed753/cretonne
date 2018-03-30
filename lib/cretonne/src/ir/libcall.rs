@@ -74,24 +74,20 @@ impl LibCall {
     /// Returns `None` if no well-known library routine name exists for that instruction.
     pub fn for_inst(opcode: Opcode, ctrl_type: Type) -> Option<LibCall> {
         Some(match ctrl_type {
-            types::F32 => {
-                match opcode {
-                    Opcode::Ceil => LibCall::CeilF32,
-                    Opcode::Floor => LibCall::FloorF32,
-                    Opcode::Trunc => LibCall::TruncF32,
-                    Opcode::Nearest => LibCall::NearestF32,
-                    _ => return None,
-                }
-            }
-            types::F64 => {
-                match opcode {
-                    Opcode::Ceil => LibCall::CeilF64,
-                    Opcode::Floor => LibCall::FloorF64,
-                    Opcode::Trunc => LibCall::TruncF64,
-                    Opcode::Nearest => LibCall::NearestF64,
-                    _ => return None,
-                }
-            }
+            types::F32 => match opcode {
+                Opcode::Ceil => LibCall::CeilF32,
+                Opcode::Floor => LibCall::FloorF32,
+                Opcode::Trunc => LibCall::TruncF32,
+                Opcode::Nearest => LibCall::NearestF32,
+                _ => return None,
+            },
+            types::F64 => match opcode {
+                Opcode::Ceil => LibCall::CeilF64,
+                Opcode::Floor => LibCall::FloorF64,
+                Opcode::Trunc => LibCall::TruncF64,
+                Opcode::Nearest => LibCall::NearestF64,
+                _ => return None,
+            },
             _ => return None,
         })
     }

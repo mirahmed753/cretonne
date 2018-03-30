@@ -30,7 +30,10 @@ pub fn translate_module<'data>(
     let mut next_input = ParserInput::Default;
     loop {
         match *parser.read_with_input(next_input) {
-            ParserState::BeginSection { code: SectionCode::Type, .. } => {
+            ParserState::BeginSection {
+                code: SectionCode::Type,
+                ..
+            } => {
                 match parse_function_signatures(&mut parser, environ) {
                     Ok(()) => (),
                     Err(SectionParsingError::WrongSectionContent(s)) => {
@@ -39,7 +42,10 @@ pub fn translate_module<'data>(
                 };
                 next_input = ParserInput::Default;
             }
-            ParserState::BeginSection { code: SectionCode::Import, .. } => {
+            ParserState::BeginSection {
+                code: SectionCode::Import,
+                ..
+            } => {
                 match parse_import_section(&mut parser, environ) {
                     Ok(()) => {}
                     Err(SectionParsingError::WrongSectionContent(s)) => {
@@ -48,7 +54,10 @@ pub fn translate_module<'data>(
                 }
                 next_input = ParserInput::Default;
             }
-            ParserState::BeginSection { code: SectionCode::Function, .. } => {
+            ParserState::BeginSection {
+                code: SectionCode::Function,
+                ..
+            } => {
                 match parse_function_section(&mut parser, environ) {
                     Ok(()) => {}
                     Err(SectionParsingError::WrongSectionContent(s)) => {
@@ -57,15 +66,19 @@ pub fn translate_module<'data>(
                 }
                 next_input = ParserInput::Default;
             }
-            ParserState::BeginSection { code: SectionCode::Table, .. } => {
-                match parse_table_section(&mut parser, environ) {
-                    Ok(()) => (),
-                    Err(SectionParsingError::WrongSectionContent(s)) => {
-                        return Err(format!("wrong content in the table section: {}", s))
-                    }
+            ParserState::BeginSection {
+                code: SectionCode::Table,
+                ..
+            } => match parse_table_section(&mut parser, environ) {
+                Ok(()) => (),
+                Err(SectionParsingError::WrongSectionContent(s)) => {
+                    return Err(format!("wrong content in the table section: {}", s))
                 }
-            }
-            ParserState::BeginSection { code: SectionCode::Memory, .. } => {
+            },
+            ParserState::BeginSection {
+                code: SectionCode::Memory,
+                ..
+            } => {
                 match parse_memory_section(&mut parser, environ) {
                     Ok(()) => {}
                     Err(SectionParsingError::WrongSectionContent(s)) => {
@@ -74,7 +87,10 @@ pub fn translate_module<'data>(
                 }
                 next_input = ParserInput::Default;
             }
-            ParserState::BeginSection { code: SectionCode::Global, .. } => {
+            ParserState::BeginSection {
+                code: SectionCode::Global,
+                ..
+            } => {
                 match parse_global_section(&mut parser, environ) {
                     Ok(()) => {}
                     Err(SectionParsingError::WrongSectionContent(s)) => {
@@ -83,7 +99,10 @@ pub fn translate_module<'data>(
                 }
                 next_input = ParserInput::Default;
             }
-            ParserState::BeginSection { code: SectionCode::Export, .. } => {
+            ParserState::BeginSection {
+                code: SectionCode::Export,
+                ..
+            } => {
                 match parse_export_section(&mut parser, environ) {
                     Ok(()) => {}
                     Err(SectionParsingError::WrongSectionContent(s)) => {
@@ -92,7 +111,10 @@ pub fn translate_module<'data>(
                 }
                 next_input = ParserInput::Default;
             }
-            ParserState::BeginSection { code: SectionCode::Start, .. } => {
+            ParserState::BeginSection {
+                code: SectionCode::Start,
+                ..
+            } => {
                 match parse_start_section(&mut parser, environ) {
                     Ok(()) => (),
                     Err(SectionParsingError::WrongSectionContent(s)) => {
@@ -101,7 +123,10 @@ pub fn translate_module<'data>(
                 }
                 next_input = ParserInput::Default;
             }
-            ParserState::BeginSection { code: SectionCode::Element, .. } => {
+            ParserState::BeginSection {
+                code: SectionCode::Element,
+                ..
+            } => {
                 match parse_elements_section(&mut parser, environ) {
                     Ok(()) => (),
                     Err(SectionParsingError::WrongSectionContent(s)) => {
@@ -110,7 +135,10 @@ pub fn translate_module<'data>(
                 }
                 next_input = ParserInput::Default;
             }
-            ParserState::BeginSection { code: SectionCode::Code, .. } => {
+            ParserState::BeginSection {
+                code: SectionCode::Code,
+                ..
+            } => {
                 // The code section begins
                 break;
             }
@@ -118,15 +146,19 @@ pub fn translate_module<'data>(
                 next_input = ParserInput::Default;
             }
             ParserState::EndWasm => return Ok(()),
-            ParserState::BeginSection { code: SectionCode::Data, .. } => {
-                match parse_data_section(&mut parser, environ) {
-                    Ok(()) => (),
-                    Err(SectionParsingError::WrongSectionContent(s)) => {
-                        return Err(format!("wrong content in the data section: {}", s))
-                    }
+            ParserState::BeginSection {
+                code: SectionCode::Data,
+                ..
+            } => match parse_data_section(&mut parser, environ) {
+                Ok(()) => (),
+                Err(SectionParsingError::WrongSectionContent(s)) => {
+                    return Err(format!("wrong content in the data section: {}", s))
                 }
-            }
-            ParserState::BeginSection { code: SectionCode::Custom { .. }, .. } => {
+            },
+            ParserState::BeginSection {
+                code: SectionCode::Custom { .. },
+                ..
+            } => {
                 // Ignore unknown custom sections.
                 next_input = ParserInput::SkipSection;
             }
@@ -142,22 +174,21 @@ pub fn translate_module<'data>(
         }
         let mut reader = parser.create_binary_reader();
         let size = reader.bytes_remaining();
-        environ.define_function_body(
-            reader.read_bytes(size).map_err(|e| {
-                format!("at offset {}: {}", e.offset, e.message)
-            })?,
-        )?;
+        environ.define_function_body(reader
+            .read_bytes(size)
+            .map_err(|e| format!("at offset {}: {}", e.offset, e.message))?)?;
     }
     loop {
         match *parser.read() {
-            ParserState::BeginSection { code: SectionCode::Data, .. } => {
-                match parse_data_section(&mut parser, environ) {
-                    Ok(()) => (),
-                    Err(SectionParsingError::WrongSectionContent(s)) => {
-                        return Err(format!("wrong content in the data section: {}", s))
-                    }
+            ParserState::BeginSection {
+                code: SectionCode::Data,
+                ..
+            } => match parse_data_section(&mut parser, environ) {
+                Ok(()) => (),
+                Err(SectionParsingError::WrongSectionContent(s)) => {
+                    return Err(format!("wrong content in the data section: {}", s))
                 }
-            }
+            },
             ParserState::EndWasm => break,
             _ => (),
         }
