@@ -359,8 +359,8 @@ class ReferenceType(LaneType):
             warning += "\nWARNING: "
             warning += "arithmetic on {}bit integers is incomplete".format(
                 bits)
-        super(IntType, self).__init__(
-                name='i{:d}'.format(bits),
+        super(ReferenceType, self).__init__(
+                name='r{:d}'.format(bits),
                 membytes=bits // 8,
                 doc="An integer type with {} bits.{}".format(bits, warning))
         self.bits = bits
@@ -374,7 +374,7 @@ class ReferenceType(LaneType):
         # type: (int) -> IntType
         typ = ValueType.by_name('i{:d}'.format(bits))
         if TYPE_CHECKING:
-            return cast(IntType, typ)
+            return cast(ReferenceType, typ)
         else:
             return typ
 
