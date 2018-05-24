@@ -346,3 +346,39 @@ class BVType(ValueType):
         # type: () -> int
         """Return the number of lane. For BVtypes always 1."""
         return 1
+
+#: ReferenceType will behave like an IntegerType for now (Will Change Later)
+class ReferenceType(LaneType):
+    """A concrete scalar integer type."""
+
+    def __init__(self, bits):
+        # type: (int) -> None
+        assert bits > 0, 'IntType must have positive number of bits'
+        warning = ""
+        if bits < 32:
+            warning += "\nWARNING: "
+            warning += "arithmetic on {}bit integers is incomplete".format(
+                bits)
+        super(IntType, self).__init__(
+                name='i{:d}'.format(bits),
+                membytes=bits // 8,
+                doc="An integer type with {} bits.{}".format(bits, warning))
+        self.bits = bits
+
+    def __repr__(self):
+        # type: () -> str
+        return 'IntType(bits={})'.format(self.bits)
+
+    @staticmethod
+    def with_bits(bits):
+        # type: (int) -> IntType
+        typ = ValueType.by_name('i{:d}'.format(bits))
+        if TYPE_CHECKING:
+            return cast(IntType, typ)
+        else:
+            return typ
+
+    def lane_bits(self):
+        # type: () -> int
+        """Return the number of bits in a lane."""
+        return self.bits
