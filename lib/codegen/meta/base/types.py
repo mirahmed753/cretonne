@@ -46,4 +46,4 @@ fflags = FlagsType(
         """)
 
 #: AnyRef Reference Type.
-anyref = ReferenceType(32)    #: For now
+r32 = ReferenceType(32)    #: For now

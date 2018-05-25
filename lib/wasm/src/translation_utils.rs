@@ -78,6 +78,7 @@ pub fn type_to_type(ty: &wasmparser::Type) -> Result<ir::Type, ()> {
         wasmparser::Type::I64 => Ok(ir::types::I64),
         wasmparser::Type::F32 => Ok(ir::types::F32),
         wasmparser::Type::F64 => Ok(ir::types::F64),
+        wasmparser::Type::AnyRef => Ok(ir::types::AnyRef),
         _ => Err(()),
     }
 }

@@ -353,7 +353,7 @@ class ReferenceType(LaneType):
 
     def __init__(self, bits):
         # type: (int) -> None
-        assert bits > 0, 'IntType must have positive number of bits'
+        assert bits > 0, 'ReferenceType must have positive number of bits'
         warning = ""
         if bits < 32:
             warning += "\nWARNING: "
