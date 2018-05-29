@@ -100,7 +100,8 @@ pub fn num_return_values(ty: wasmparser::Type) -> usize {
         wasmparser::Type::I32 |
         wasmparser::Type::F32 |
         wasmparser::Type::I64 |
-        wasmparser::Type::F64 => 1,
+        wasmparser::Type::F64 |
+        wasmparser::Type::R32 => 1,
         _ => panic!("unsupported return value type"),
     }
 }
