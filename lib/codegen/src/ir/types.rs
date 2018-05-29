@@ -53,7 +53,7 @@ impl Type {
             B1 => 0,
             B8 | I8 => 3,
             B16 | I16 => 4,
-            B32 | I32 | F32 => 5,
+            B32 | I32 | F32 | R32 => 5, // Added R32
             B64 | I64 | F64 => 6,
             _ => 0,
         }
@@ -65,7 +65,7 @@ impl Type {
             B1 => 1,
             B8 | I8 => 8,
             B16 | I16 => 16,
-            B32 | I32 | F32 => 32,
+            B32 | I32 | F32 | R32 => 32, // Added R32
             B64 | I64 | F64 => 64,
             _ => 0,
         }
@@ -98,7 +98,7 @@ impl Type {
         self.replace_lanes(match self.lane_type() {
             B8 | I8 => B8,
             B16 | I16 => B16,
-            B32 | I32 | F32 => B32,
+            B32 | I32 | F32 | R32 => B32, // Added R32
             B64 | I64 | F64 => B64,
             _ => B1,
         })
@@ -181,7 +181,7 @@ impl Type {
     /// Is this a scalar integer type?
     pub fn is_int(self) -> bool {
         match self {
-            I8 | I16 | I32 | I64 => true,
+            I8 | I16 | I32 | I64 | R32 => true, // Added R32
             _ => false,
         }
     }
@@ -345,6 +345,7 @@ mod tests {
         assert_eq!(I64, I64.lane_type());
         assert_eq!(F32, F32.lane_type());
         assert_eq!(F64, F64.lane_type());
+        assert_eq!(R32, R32.lane_type()); // Added R32
 
         assert_eq!(VOID.lane_bits(), 0);
         assert_eq!(IFLAGS.lane_bits(), 0);
@@ -360,6 +361,7 @@ mod tests {
         assert_eq!(I64.lane_bits(), 64);
         assert_eq!(F32.lane_bits(), 32);
         assert_eq!(F64.lane_bits(), 64);
+        assert_eq!(R32.lane_bits(), 32); // Added R32
     }
 
     #[test]
@@ -430,6 +432,7 @@ mod tests {
         assert_eq!(I64.to_string(), "i64");
         assert_eq!(F32.to_string(), "f32");
         assert_eq!(F64.to_string(), "f64");
+        assert_eq!(R32.to_string(), "r32");
     }
 
     #[test]

@@ -83,8 +83,11 @@ pub trait FuncEnvironment {
     fn native_pointer(&self) -> ir::Type {
         if self.flags().is_64bit() {
             ir::types::I64
+        // } else if self.flags().is_32bit() {
+        //     ir::types::I32
+        // }
         } else {
-            ir::types::I32
+            ir::types::R32
         }
     }
 
