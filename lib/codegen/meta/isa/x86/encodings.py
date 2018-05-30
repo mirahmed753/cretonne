@@ -148,6 +148,22 @@ for inst,           opc in [
         (base.bxor, 0x31)]:
     enc_i32_i64(inst, r.rr, opc)
 
+def enc_r32_r64(inst, recipe, *args, **kwargs):
+    # type: (MaybeBoundInst, r.TailRecipe, *int, **int) -> None
+    """
+    Add encodings for `inst.i32` to X86_32.
+    Add encodings for `inst.i32` to X86_64 with and without REX.
+    Add encodings for `inst.i64` to X86_64 with a REX.W prefix.
+    """
+    X86_32.enc(inst.r32, *recipe(*args, **kwargs))
+
+    # REX-less encoding must come after REX encoding so we don't use it by
+    # default. Otherwise reg-alloc would never use r8 and up.
+    X86_64.enc(inst.r32, *recipe.rex(*args, **kwargs))
+    X86_64.enc(inst.r32, *recipe(*args, **kwargs))
+
+    # X86_64.enc(inst.r64, *recipe.rex(*args, w=1, **kwargs))
+
 # Also add a `b1` encodings for the logic instructions.
 # TODO: Should this be done with 8-bit instructions? It would improve
 # partial register dependencies.
@@ -165,11 +181,16 @@ enc_i32_i64(x86.umulx, r.mulx, 0xf7, rrr=4)
 enc_i32_i64(base.copy, r.umr, 0x89)
 enc_both(base.copy.b1, r.umr, 0x89)
 
+enc_r32_r64(base.copy, r.umr, 0x89)
+
 # For x86-64, only define REX forms for now, since we can't describe the
 # special regunit immediate operands with the current constraint language.
 X86_32.enc(base.regmove.i32, *r.rmov(0x89))
 X86_64.enc(base.regmove.i32, *r.rmov.rex(0x89))
 X86_64.enc(base.regmove.i64, *r.rmov.rex(0x89, w=1))
+
+X86_32.enc(base.regmove.r32, *r.rmov(0x89))
+X86_64.enc(base.regmove.r32, *r.rmov.rex(0x89))
 
 enc_both(base.regmove.b1, r.rmov, 0x89)
 enc_both(base.regmove.i8, r.rmov, 0x89)

@@ -181,7 +181,7 @@ impl Type {
     /// Is this a scalar integer type?
     pub fn is_int(self) -> bool {
         match self {
-            I8 | I16 | I32 | I64 | R32 => true, // Added R32
+            I8 | I16 | I32 | I64 => true, // Added R32
             _ => false,
         }
     }

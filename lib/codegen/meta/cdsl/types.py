@@ -367,12 +367,12 @@ class ReferenceType(LaneType):
 
     def __repr__(self):
         # type: () -> str
-        return 'IntType(bits={})'.format(self.bits)
+        return 'ReferenceType(bits={})'.format(self.bits)
 
     @staticmethod
     def with_bits(bits):
         # type: (int) -> IntType
-        typ = ValueType.by_name('i{:d}'.format(bits))
+        typ = ValueType.by_name('r{:d}'.format(bits))
         if TYPE_CHECKING:
             return cast(ReferenceType, typ)
         else:
