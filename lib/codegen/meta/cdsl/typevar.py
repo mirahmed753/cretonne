@@ -595,7 +595,8 @@ class TypeVar(object):
             bitvecs=False,          # type: BoolInterval
             base=None,              # type: TypeVar
             derived_func=None,      # type: str
-            specials=None           # type: SpecialSpec
+            specials=None,          # type: SpecialSpec
+            refs=False              # type: ReferenceType
             ):
         # type: (...) -> None
         self.name = name

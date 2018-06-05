@@ -362,7 +362,7 @@ class ReferenceType(LaneType):
         super(ReferenceType, self).__init__(
                 name='r{:d}'.format(bits),
                 membytes=bits // 8,
-                doc="An integer type with {} bits.{}".format(bits, warning))
+                doc="A reference type with {} bits.{}".format(bits, warning))
         self.bits = bits
 
     def __repr__(self):

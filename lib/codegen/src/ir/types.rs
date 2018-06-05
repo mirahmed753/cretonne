@@ -181,7 +181,7 @@ impl Type {
     /// Is this a scalar integer type?
     pub fn is_int(self) -> bool {
         match self {
-            I8 | I16 | I32 | I64 => true, // Added R32
+            I8 | I16 | I32 | I64 => true,
             _ => false,
         }
     }
@@ -198,6 +198,14 @@ impl Type {
     pub fn is_flags(self) -> bool {
         match self {
             IFLAGS | FFLAGS => true,
+            _ => false,
+        }
+    }
+
+    /// Is this a ref type?
+    pub fn is_ref(self) -> bool {
+        match self {
+            R32 => true,
             _ => false,
         }
     }
@@ -283,6 +291,8 @@ impl Display for Type {
             write!(f, "f{}", self.lane_bits())
         } else if self.is_vector() {
             write!(f, "{}x{}", self.lane_type(), self.lane_count())
+        } else if self.is_ref() {
+            write!(f, "r32")
         } else {
             f.write_str(match *self {
                 VOID => "void",

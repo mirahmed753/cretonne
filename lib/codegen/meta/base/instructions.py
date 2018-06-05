@@ -21,6 +21,7 @@ GROUP = InstructionGroup("base", "Shared base instruction set")
 Int = TypeVar('Int', 'A scalar or vector integer type', ints=True, simd=True)
 Bool = TypeVar('Bool', 'A scalar or vector boolean type',
                bools=True, simd=True)
+Ref = TypeVar('Ref', 'A reference type', refs=True)
 iB = TypeVar('iB', 'A scalar integer type', ints=True)
 iAddr = TypeVar('iAddr', 'An integer address type', ints=(32, 64))
 Testable = TypeVar(
@@ -535,6 +536,18 @@ heap_addr = Instruction(
 # Materializing constants.
 #
 
+#: Instruction for rconst (or rnull)
+a = Operand('a', Ref, doc='A constant Reference Type')
+rconst = Instruction(
+        'rconst', r"""
+        Reference Type constant.
+
+        Create a scalar integer SSA value with an immediate constant value, or
+        an integer vector where all the lanes have the same value.
+        """,
+        outs=a)
+
+#: Existing Instructions
 N = Operand('N', imm64)
 a = Operand('a', Int, doc='A constant integer scalar or vector value')
 iconst = Instruction(
