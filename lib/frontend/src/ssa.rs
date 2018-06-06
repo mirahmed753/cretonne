@@ -9,7 +9,7 @@ use cretonne_codegen::cursor::{Cursor, FuncCursor};
 use cretonne_codegen::entity::{EntityMap, EntityRef, PrimaryMap};
 use cretonne_codegen::ir::immediates::{Ieee32, Ieee64};
 use cretonne_codegen::ir::instructions::BranchInfo;
-use cretonne_codegen::ir::types::{F32, F64};
+use cretonne_codegen::ir::types::{F32, F64, R32};
 use cretonne_codegen::ir::{Ebb, Function, Inst, InstBuilder, Type, Value};
 use cretonne_codegen::packed_option::PackedOption;
 use cretonne_codegen::packed_option::ReservedValue;
@@ -211,6 +211,8 @@ fn emit_zero(ty: Type, mut cur: FuncCursor) -> Value {
         cur.ins().f32const(Ieee32::with_bits(0))
     } else if ty == F64 {
         cur.ins().f64const(Ieee64::with_bits(0))
+    } else if ty == R32 {
+        cur.ins().rconst(ty)
     } else if ty.is_vector() {
         let scalar_ty = ty.lane_type();
         if scalar_ty.is_int() {
