@@ -542,8 +542,7 @@ rconst = Instruction(
         'rconst', r"""
         Reference Type constant.
 
-        Create a scalar integer SSA value with an immediate constant value, or
-        an integer vector where all the lanes have the same value.
+        Create a reference type with an immediate value of null.
         """,
         outs=a)
 

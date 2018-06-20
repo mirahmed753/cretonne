@@ -480,6 +480,7 @@ pub fn translate_operator<FE: FuncEnvironment + ?Sized>(
         /****************************** Nullary Operators ************************************/
         Operator::I32Const { value } => state.push1(builder.ins().iconst(I32, i64::from(value))),
         Operator::I64Const { value } => state.push1(builder.ins().iconst(I64, value)),
+        Operator::R32Const { value } => state.push1(builder.ins().rconst(R32)),
         Operator::F32Const { value } => {
             state.push1(builder.ins().f32const(f32_translation(value)));
         }

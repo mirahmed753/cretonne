@@ -189,7 +189,7 @@ X86_32.enc(base.regmove.i32, *r.rmov(0x89))
 X86_64.enc(base.regmove.i32, *r.rmov.rex(0x89))
 X86_64.enc(base.regmove.i64, *r.rmov.rex(0x89, w=1))
 
-X86_32.enc(base.regmove.r32, *r.rmov(0x89))
+# X86_32.enc(base.regmove.r32, *r.rmov(0x89))       : We're actually not using x86_32
 X86_64.enc(base.regmove.r32, *r.rmov.rex(0x89))
 
 enc_both(base.regmove.b1, r.rmov, 0x89)
