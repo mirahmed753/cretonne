@@ -1,6 +1,6 @@
 (module
-  (global $sp (mut i32) (i32.const 0))
-  (func $test1 (param i32) (result i32)
-    get_global $sp
+  (global $var (mut r32)(r32.const))
+  (func $test1 (param r32) (result r32)
+    get_global $var
    )
   )

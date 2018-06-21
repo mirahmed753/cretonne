@@ -32,6 +32,8 @@ pub enum GlobalInit {
     I32Const(i32),
     /// An `i64.const`.
     I64Const(i64),
+    /// An 'r32.const'.
+    R32Const(),
     /// An `f32.const`.
     F32Const(u32),
     /// An `f64.const`.
