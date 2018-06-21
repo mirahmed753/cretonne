@@ -230,6 +230,9 @@ pub fn parse_global_section(
             ParserState::InitExpressionOperator(Operator::F64Const { value }) => {
                 GlobalInit::F64Const(value.bits())
             }
+            ParserState::InitExpressionOperator(Operator::R32Const) => {
+                GlobalInit::R32Const()
+            }
             ParserState::InitExpressionOperator(Operator::GetGlobal { global_index }) => {
                 GlobalInit::GlobalRef(global_index as GlobalIndex)
             }
