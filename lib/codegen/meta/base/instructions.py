@@ -862,6 +862,22 @@ extractlane = Instruction(
         """,
         ins=(x, Idx), outs=a)
 
+#: is_null for Reference Types
+a = Operand('a', Bool)
+x = Operand('x', Ref)
+
+is_null = Instruction(
+        'is_null', r"""
+        Reference verification.
+
+        The condition code determines if the operands are interpreted as signed
+        or unsigned integers.
+
+        When this instruction compares integer vectors, it returns a boolean
+        vector of lane-wise comparisons.
+        """,
+        ins=(x), outs=a)
+
 #
 # Integer arithmetic
 #
