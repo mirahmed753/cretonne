@@ -1,16 +1,17 @@
-use ir::Function;
-use ir::dfg;
-use isa::TargetIsa;
-use regalloc::RegDiversions;
-use ir::instructions::{BranchInfo, CallInfo, InstructionData};
-use ir::types;
-use ir::{Ebb, FuncRef, Inst, SigRef, Signature, Type, Value, ValueList, ValueListPool};
+// use ir::Function;
+// use ir::dfg;
+// use isa::TargetIsa;
+// use regalloc::RegDiversions;
+// use ir::instructions::{BranchInfo, CallInfo, InstructionData};
+// use ir::types;
+// use ir::{Ebb, FuncRef, Inst, SigRef, Signature, Type, Value, ValueList, ValueListPool};
 
-// This function needs to know what function call we are talking about so that it can
-// properly print out the arguments, the live variables, etc.
-pub fn emit_stackmaps(inst: Inst) {
+/// This function needs to know what function call we are talking about so that it can
+/// properly print out the arguments, the live variables, etc.
+pub fn emit_stackmaps() {
     // display_inst(inst);
-    println!("Hola mi amigos!");
+    let x = "Hola mi amigos!";
+    println!("{}", x);
 }
 
 

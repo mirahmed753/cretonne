@@ -6,10 +6,12 @@
 mod memorysink;
 mod relaxation;
 mod shrink;
+mod stackmaps;
 
 pub use self::memorysink::{MemoryCodeSink, RelocSink, TrapSink, NullTrapSink};
 pub use self::relaxation::relax_branches;
 pub use self::shrink::shrink_instructions;
+pub use self::stackmaps::emit_stackmaps;
 pub use regalloc::RegDiversions;
 
 use ir::{ExternalName, Function, Inst, JumpTable, SourceLoc, TrapCode};
