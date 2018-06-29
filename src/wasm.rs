@@ -14,6 +14,55 @@ use std::path::PathBuf;
 use term;
 use utils::{parse_sets_and_isa, read_to_end};
 use wabt::wat2wasm;
+use cretonne_codegen::binemit;
+use cretonne_codegen::ir;
+
+struct PrintRelocs {
+    flag_print: bool,
+}
+
+impl binemit::RelocSink for PrintRelocs {
+    fn reloc_ebb(
+        &mut self,
+        where_: binemit::CodeOffset,
+        r: binemit::Reloc,
+        offset: binemit::CodeOffset,
+    ) {
+        if self.flag_print {
+            println!("reloc_ebb: {} {} at {}", r, offset, where_);
+        }
+    }
+
+    fn reloc_external(
+        &mut self,
+        where_: binemit::CodeOffset,
+        r: binemit::Reloc,
+        name: &ir::ExternalName,
+        addend: binemit::Addend,
+    ) {
+        if self.flag_print {
+            println!("reloc_ebb: {} {} {} at {}", r, name, addend, where_);
+        }
+    }
+
+    fn reloc_jt(&mut self, where_: binemit::CodeOffset, r: binemit::Reloc, jt: ir::JumpTable) {
+        if self.flag_print {
+            println!("reloc_ebb: {} {} at {}", r, jt, where_);
+        }
+    }
+}
+
+struct PrintTraps {
+    flag_print: bool,
+}
+
+impl binemit::TrapSink for PrintTraps {
+    fn trap(&mut self, offset: binemit::CodeOffset, _srcloc: ir::SourceLoc, code: ir::TrapCode) {
+        if self.flag_print {
+            println!("trap: {} at {}", code, offset);
+        }
+    }
+}
 
 macro_rules! vprintln {
     ($x: expr, $($tts:tt)*) => {
@@ -141,14 +190,22 @@ fn handle_module(
         let func_index = num_func_imports + def_index;
         let mut context = Context::new();
         context.func = func.clone();
+
+        let mut mem = Vec::new();
+        let mut relocs = PrintRelocs { flag_print };
+        let mut traps = PrintTraps { flag_print };
+
         if flag_check_translation {
             context.verify(fisa).map_err(|err| {
                 pretty_verifier_error(&context.func, fisa.isa, &err)
             })?;
         } else if let Some(isa) = fisa.isa {
-            let compiled_size = context.compile(isa).map_err(|err| {
+            context.compile_and_emit(isa, &mut mem, &mut relocs, &mut traps).map_err(|err| {
                 pretty_error(&context.func, fisa.isa, err)
             })?;
+            
+            let compiled_size = mem.len();
+
             if flag_print_size {
                 println!(
                     "Function #{} code size: {} bytes",

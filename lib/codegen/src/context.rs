@@ -167,7 +167,6 @@ impl Context {
         relocs: &mut RelocSink,
         traps: &mut TrapSink,
     ) {
-        println!("hey");
         emit_stackmaps();
         let _tt = timing::binemit();
         isa.emit_function(&self.func, &mut MemoryCodeSink::new(mem, relocs, traps));
