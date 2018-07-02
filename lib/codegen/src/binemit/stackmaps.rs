@@ -36,10 +36,12 @@ pub fn emit_stackmaps(func: & Function, isa: &TargetIsa) {
                 let ctrl_type = func.dfg.ctrl_typevar(inst);
 
                 // check if type is R32
-                if ctrl_type == types::I32 {
+                if ctrl_type == types::R32 {
                     println!("In Instruction {}: {}", i, func.dfg.display_inst(inst, isa));
                     println!("  Controlling Type: {:?}", ctrl_type);
                     println!("      in Registers: {:?}", func.dfg.inst_args(inst));
+                    println!("      with Results: {:?}", func.dfg.inst_results(inst));
+                    // add result args
                 }
 
                 i = i + 1;
