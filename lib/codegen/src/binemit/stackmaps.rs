@@ -1,5 +1,8 @@
-// use ir::Function;
 // use ir::dfg;
+use ir::Function;
+use ir::types;
+use isa::TargetIsa;
+use regalloc::RegDiversions;
 // use isa::TargetIsa;
 // use regalloc::RegDiversions;
 // use ir::instructions::{BranchInfo, CallInfo, InstructionData};
@@ -8,55 +11,41 @@
 
 /// This function needs to know what function call we are talking about so that it can
 /// properly print out the arguments, the live variables, etc.
-pub fn emit_stackmaps() {
-    // display_inst(inst);
-    let x = "Hola mi amigos!";
-    println!("{}", x);
+pub fn emit_stackmaps(func: & Function, isa: &TargetIsa) {
+    println!("--------------------------------------------------------------");
+    println!("Stackmap Information");
+    println!("--------------------------------------------------------------");
+
+    let mut i = 0;
+
+    // Follow shrink_instructions in shrink.rs
+    let mut divert = RegDiversions::new();
+
+    for ebb in func.layout.ebbs() {
+        divert.clear();
+
+        for inst in func.layout.ebb_insts(ebb) {
+            let enc = func.encodings[inst];
+
+            if enc.is_legal() {
+                // print out the complete instruction along with the arguments
+                // println!("Instruction {}: {}", i, func.dfg.display_inst(inst, isa));
+                // println!("     Arguments: {:?}", func.dfg.inst_args(inst));
+
+                // grab type
+                let ctrl_type = func.dfg.ctrl_typevar(inst);
+
+                // check if type is R32
+                if ctrl_type == types::I32 {
+                    println!("In Instruction {}: {}", i, func.dfg.display_inst(inst, isa));
+                    println!("  Controlling Type: {:?}", ctrl_type);
+                    println!("      in Registers: {:?}", func.dfg.inst_args(inst));
+                }
+
+                i = i + 1;
+            }
+            divert.apply(&func.dfg[inst]);
+        }
+    }
+    println!("--------------------------------------------------------------");
 }
-
-
-
-// pub fn display_inst<'a, I: Into<Option<&'a TargetIsa>>>(&'a self, inst: Inst, isa: I,) -> DisplayInst<'a>
-// {
-//     DisplayInst(self, isa.into(), inst)
-// }
-
-
-// /// Pick the smallest valid encodings for instructions.
-// pub fn shrink_instructions(func: &mut Function, isa: &TargetIsa) {
-//     let encinfo = isa.encoding_info();
-//     let mut divert = RegDiversions::new();
-//
-//     for ebb in func.layout.ebbs() {
-//         divert.clear();
-//         for inst in func.layout.ebb_insts(ebb) {
-//             let enc = func.encodings[inst];
-//             if enc.is_legal() {
-//                 let ctrl_type = func.dfg.ctrl_typevar(inst);
-//
-//                 // Pick the last encoding with constraints that are satisfied.
-//                 let best_enc = isa.legal_encodings(func, &func.dfg[inst], ctrl_type)
-//                     .filter(|e| {
-//                         encinfo.constraints[e.recipe()].satisfied(inst, &divert, &func)
-//                     })
-//                     .min_by_key(|e| encinfo.bytes(*e))
-//                     .unwrap();
-//
-//                 if best_enc != enc {
-//                     func.encodings[inst] = best_enc;
-//
-//                     dbg!(
-//                         "Shrunk [{}] to [{}] in {}, reducing the size from {} to {}",
-//                         encinfo.display(enc),
-//                         encinfo.display(best_enc),
-//                         func.dfg.display_inst(inst, isa),
-//                         encinfo.bytes(enc),
-//                         encinfo.bytes(best_enc)
-//                     );
-//                 }
-//
-//             }
-//             divert.apply(&func.dfg[inst]);
-//         }
-//     }
-// }

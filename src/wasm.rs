@@ -105,6 +105,7 @@ pub fn run(
             &name,
             parsed.as_fisa(),
         )?;
+        println!("name in wasm.rs line 108: {}", name);
     }
     Ok(())
 }
@@ -203,7 +204,7 @@ fn handle_module(
             context.compile_and_emit(isa, &mut mem, &mut relocs, &mut traps).map_err(|err| {
                 pretty_error(&context.func, fisa.isa, err)
             })?;
-            
+            // Compile and Emit was changed above here; Had to create compiled_size for code to flow
             let compiled_size = mem.len();
 
             if flag_print_size {
