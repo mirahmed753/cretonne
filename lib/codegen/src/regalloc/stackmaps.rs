@@ -3,19 +3,18 @@ use ir::Function;
 use ir::types;
 use isa::TargetIsa;
 use regalloc::RegDiversions;
-// use isa::TargetIsa;
-// use regalloc::RegDiversions;
-// use ir::instructions::{BranchInfo, CallInfo, InstructionData};
-// use ir::types;
-// use ir::{Ebb, FuncRef, Inst, SigRef, Signature, Type, Value, ValueList, ValueListPool};
+use dominator_tree::DominatorTree;
+use regalloc::live_value_tracker::LiveValueTracker;
+use regalloc::liveness::Liveness;
 
 /// This function needs to know what function call we are talking about so that it can
 /// properly print out the arguments, the live variables, etc.
-pub fn emit_stackmaps(func: & Function, isa: &TargetIsa) {
+pub fn emit_stackmaps(isa: &TargetIsa, func: & Function, domtree: &mut DominatorTree,
+    liveness: &mut Liveness, tracker: &mut LiveValueTracker) {
     println!("--------------------------------------------------------------");
     println!("Stackmap Information");
     println!("--------------------------------------------------------------");
-
+    //         emit_stackmaps(isa, func, domtree, &self.liveness, &self.tracker);
     let mut i = 0;
 
     // Follow shrink_instructions in shrink.rs
@@ -28,9 +27,7 @@ pub fn emit_stackmaps(func: & Function, isa: &TargetIsa) {
             let enc = func.encodings[inst];
 
             if enc.is_legal() {
-                // print out the complete instruction along with the arguments
-                // println!("Instruction {}: {}", i, func.dfg.display_inst(inst, isa));
-                // println!("     Arguments: {:?}", func.dfg.inst_args(inst));
+                // emit_stackmaps(isa, func, domtree, &self.liveness, &self.tracker);
 
                 // grab type
                 let ctrl_type = func.dfg.ctrl_typevar(inst);

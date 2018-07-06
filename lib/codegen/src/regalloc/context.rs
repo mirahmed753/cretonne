@@ -15,6 +15,7 @@ use regalloc::liveness::Liveness;
 use regalloc::reload::Reload;
 use regalloc::spilling::Spilling;
 use regalloc::virtregs::VirtRegs;
+use regalloc::stackmaps::emit_stackmaps;
 use result::CtonResult;
 use timing;
 use topo_order::TopoOrder;
@@ -147,6 +148,9 @@ impl Context {
             &mut self.liveness,
             &mut self.tracker,
         );
+
+        // here
+        emit_stackmaps(isa, func, domtree, &mut self.liveness, &mut self.tracker);
 
         if isa.flags().enable_verifier() {
             verify_context(func, cfg, domtree, isa)?;

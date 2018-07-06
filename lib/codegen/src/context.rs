@@ -9,7 +9,7 @@
 //! contexts concurrently. Typically, you would have one context per compilation thread and only a
 //! single ISA instance.
 
-use binemit::{relax_branches, shrink_instructions, CodeOffset, MemoryCodeSink, RelocSink, TrapSink, emit_stackmaps};
+use binemit::{relax_branches, shrink_instructions, CodeOffset, MemoryCodeSink, RelocSink, TrapSink};
 use dce::do_dce;
 use dominator_tree::DominatorTree;
 use flowgraph::ControlFlowGraph;
@@ -167,7 +167,6 @@ impl Context {
         relocs: &mut RelocSink,
         traps: &mut TrapSink,
     ) {
-        emit_stackmaps(&self.func, isa);
         let _tt = timing::binemit();
         isa.emit_function(&self.func, &mut MemoryCodeSink::new(mem, relocs, traps));
     }
