@@ -589,6 +589,18 @@ bconst = Instruction(
         """,
         ins=N, outs=a)
 
+# stackmap instruction
+N = Operand('args', VARIABLE_ARGS, doc='A variable number of arguments for the Stackmap')
+stackmap = Instruction(
+        'stackmap', r"""
+        Several Argument Types`.
+
+        Create a stackmap provided a variable number of arguments.
+        """,
+        ins=N)
+#: outs are just print statements of the stackmap (like the terminal)
+#: Should outs be 'Any'?
+
 #
 # Generics.
 #

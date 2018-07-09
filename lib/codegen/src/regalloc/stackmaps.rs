@@ -14,12 +14,13 @@ pub fn emit_stackmaps(isa: &TargetIsa, func: & Function, domtree: &mut Dominator
     println!("--------------------------------------------------------------");
     println!("Stackmap Information");
     println!("--------------------------------------------------------------");
-    //         emit_stackmaps(isa, func, domtree, &self.liveness, &self.tracker);
+
     let mut i = 0;
 
     // Follow shrink_instructions in shrink.rs
     let mut divert = RegDiversions::new();
 
+    // Post-order traversal here?
     for ebb in func.layout.ebbs() {
         divert.clear();
 
@@ -27,7 +28,7 @@ pub fn emit_stackmaps(isa: &TargetIsa, func: & Function, domtree: &mut Dominator
             let enc = func.encodings[inst];
 
             if enc.is_legal() {
-                // emit_stackmaps(isa, func, domtree, &self.liveness, &self.tracker);
+                // function signature: emit_stackmaps(isa, func, domtree, &self.liveness, &self.tracker);
 
                 // grab type
                 let ctrl_type = func.dfg.ctrl_typevar(inst);
