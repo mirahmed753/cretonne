@@ -597,9 +597,8 @@ stackmap = Instruction(
 
         Create a stackmap provided a variable number of arguments.
         """,
-        ins=N)
-#: outs are just print statements of the stackmap (like the terminal)
-#: Should outs be 'Any'?
+        ins=N,
+        other_side_effects=True)
 
 #
 # Generics.
