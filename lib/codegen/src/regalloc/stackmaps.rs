@@ -6,6 +6,7 @@ use regalloc::liveness::Liveness;
 use cursor::{Cursor, FuncCursor};
 use std::collections::HashSet;
 use ir::InstBuilder;
+use ir::types::R32;
 
 // The emit_stackmaps() function analyzes each instruction to retrieve the liveness of
 // the defs and operands by traversing the dominator tree in a post order fashion.
@@ -38,6 +39,13 @@ pub fn emit_stackmaps(isa: &TargetIsa, func: &mut Function, domtree: &mut Domina
                 ebbs_for_stackmap.insert(branch_dest);
             }
 
+            // Check if it's a call instruction
+            if opcode.is_call() {
+                // insert stackmap instruction
+                let mut value_list = Vec::new();
+                pos.ins().stackmap(&value_list);
+            }
+
             // Process the instruction
             tracker.process_inst(inst, &pos.func.dfg, liveness);
 
@@ -53,7 +61,10 @@ pub fn emit_stackmaps(isa: &TargetIsa, func: &mut Function, domtree: &mut Domina
             if live_info.len() != 0 {
 
                 for value_in_list in live_info {
-                    live_value_list.push(value_in_list.value);
+                    // only store values that are reference types
+                    if pos.func.dfg.ctrl_typevar(inst) == R32 {
+                        live_value_list.push(value_in_list.value);
+                    }
                 }
             }
 
@@ -61,10 +72,10 @@ pub fn emit_stackmaps(isa: &TargetIsa, func: &mut Function, domtree: &mut Domina
             // that we are currently working with
 
             // print contents of array
-            println!("In {:?}, {:?} has live values: ", ebb, inst);
+            println!("  In {:?}, {:?} has live values: ", ebb, inst);
             print!("   ");
             if live_value_list.len() == 0 {
-                print!("no live values");
+                print!("no live reference type values");
             }
             else {
                 for val in live_value_list {
