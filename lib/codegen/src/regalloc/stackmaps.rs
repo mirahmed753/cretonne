@@ -32,20 +32,6 @@ pub fn emit_stackmaps(isa: &TargetIsa, func: &mut Function, domtree: &mut Domina
 
             println!("Instruction Data: {}", pos.func.dfg.display_inst(inst, None));
 
-            // Check if it's a branch instruction
-            if opcode.is_branch() {
-                // Find what the branch destination is
-                let branch_dest = pos.func.dfg[inst].branch_destination();
-                ebbs_for_stackmap.insert(branch_dest);
-            }
-
-            // Check if it's a call instruction
-            if opcode.is_call() {
-                // insert stackmap instruction
-                let mut value_list = Vec::new();
-                pos.ins().stackmap(&value_list);
-            }
-
             // Process the instruction
             tracker.process_inst(inst, &pos.func.dfg, liveness);
 
@@ -78,12 +64,28 @@ pub fn emit_stackmaps(isa: &TargetIsa, func: &mut Function, domtree: &mut Domina
                 print!("no live reference type values");
             }
             else {
-                for val in live_value_list {
-                    print!("{:?} ", val);
+                let mut print_live_vals = &live_value_list;
+
+                for val in print_live_vals {
+                    let mut x = &val;
+                    print!("{:?} ", x);
                 }
             }
 
             println!();
+
+            // Check if it's a branch instruction
+            if opcode.is_branch() {
+                // Find what the branch destination is
+                let branch_dest = pos.func.dfg[inst].branch_destination();
+                ebbs_for_stackmap.insert(branch_dest);
+            }
+
+            // Check if it's a call instruction
+            if opcode.is_call() {
+                // insert stackmap instruction
+                pos.ins().stackmap(&live_value_list);
+            }
 
         } // end while loop for instructions
     } // end for loop for ebb
